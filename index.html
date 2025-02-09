@@ -9,23 +9,24 @@
     <button onclick="getTheme()">Get Theme</button>
 
     <script>
-        const iframe = document.createElement("iframe");
-        iframe.src = "https://safari-test-one.vercel.app";
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-
         function checkCookie(name) {
             return document.cookie.split('; ').some(row => row.startsWith(name + '='));
         }
 
         function ensureStorageAccess() {
-            if (!checkCookie("storageUnlocked")) {
-                console.log("🚨 Redirecting to grant storage access...");
-                window.location.href = "https://safari-test-one.vercel.app/grant-access.html?returnUrl=" + encodeURIComponent(window.location.href);
-            } else {
-                console.log("✅ Storage access already granted!");
+            if (checkCookie("storageUnlocked")) {
+                console.log("✅ Storage access already granted, no redirect needed.");
+                return;
             }
+            
+            console.log("🚨 Redirecting to grant storage access...");
+            window.location.href = "https://safari-test-one.vercel.app/grant-access.html?returnUrl=" + encodeURIComponent(window.location.href);
         }
+
+        const iframe = document.createElement("iframe");
+        iframe.src = "https://safari-test-one.vercel.app"; 
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
 
         function sendMessage(action, key, value = null) {
             return new Promise((resolve) => {
