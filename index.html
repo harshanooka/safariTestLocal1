@@ -1,54 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Website 1 - Set Light Theme</title>
-</head>
-<body>
-    <h1>Website 1</h1>
-    <button onclick="setTheme()">Set Light Theme</button>
+  <head>
+    <title>Local 1</title>
+  </head>
+  <body>
+    <h1>Local 1</h1>
+    <button onclick="setDarkTheme()">Set Dark Theme</button>
     <button onclick="getTheme()">Get Theme</button>
+    <button onclick="triggerRequestStorageAccess()">Enable Storage (Safari)</button>
 
     <script>
-        function checkStorageAccess() {
-            // Check if IndexedDB was unlocked in the top-level context
-            if (localStorage.getItem("storageUnlocked") === "true") {
-                console.log("✅ Storage access already granted, no redirect needed.");
-                return;
-            }
-
-            // Redirect to grant access
-            console.log("🚨 Redirecting to grant storage access...");
-            window.location.href = "https://safari-test-one.vercel.app/grant-access.html?returnUrl=" + encodeURIComponent(window.location.href);
-        }
-
-        // Load iframe storage
         const iframe = document.createElement("iframe");
-        iframe.src = "https://safari-test-one.vercel.app"; 
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
+iframe.src = "https://local.cache.com:8081";
+iframe.style.display = "none";
+document.body.appendChild(iframe);
 
-        function sendMessage(action, key, value = null) {
-            return new Promise((resolve) => {
-                function listener(event) {
-                    if (event.origin === "https://safari-test-one.vercel.app") {
-                        resolve(event.data.value);
-                        window.removeEventListener("message", listener);
-                    }
-                }
-                window.addEventListener("message", listener);
-                iframe.contentWindow.postMessage({ action, key, value }, "https://safari-test-one.vercel.app");
-            });
-        }
+function checkCookie(name: string) {
+  return document.cookie.split("; ").some((row) => row.startsWith(name + "="));
+}
 
-        function setTheme() {
-            sendMessage("set", "theme", "light").then(() => console.log("Light theme set in IndexedDB!"));
-        }
+function ensureStorageAccess() {
+  if (!checkCookie("storageUnlocked")) {
+    console.log("🚨 Redirecting to grant storage access...");
+    window.location.href = "https://local.cache.com:8081/grant-access.html";
+  } else {
+    console.log("✅ Storage access already granted!");
+  }
+}
 
-        function getTheme() {
-            sendMessage("get", "theme").then((value) => console.log("Current Theme:", value));
-        }
+function sendMessage(action: string, key: string, value: string | null = null) {
+  return new Promise<string>((resolve) => {
+    function listener(event: MessageEvent<{ value: string }>) {
+      if (event.origin === "https://local.cache.com:8081") {
+        resolve(event.data.value);
+        window.removeEventListener("message", listener);
+      }
+    }
+    window.addEventListener("message", listener);
+    iframe.contentWindow?.postMessage({ action, key, value }, { targetOrigin: "https://local.cache.com:8081" });
+  });
+}
 
-        checkStorageAccess();
+function setDarkTheme() {
+  sendMessage("set", "theme", "gray").then(() => {
+    console.log("Theme set in IndexedDB!");
+    document.body.style.background = "gray";
+  });
+}
+
+function getTheme() {
+  sendMessage("get", "theme").then((value) => {
+    document.body.style.background = value;
+
+    console.log("Theme from IndexedDB:", value);
+  });
+}
+
+ensureStorageAccess();
+
     </script>
-</body>
+  </body>
 </html>
