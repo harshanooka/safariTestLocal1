@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Main App</h1>
-    <button onclick="setTheme()">Set Theme</button>
+    <button onclick="setTheme()">Set Light Theme</button>
     <button onclick="getTheme()">Get Theme</button>
     <button onclick="requestStorageAccess()">Enable Storage (Safari)</button>
 
@@ -29,7 +29,7 @@
         }
 
         function setTheme() {
-            sendMessage("set", "theme", "dark").then(() => console.log("Theme set in IndexedDB!"));
+            sendMessage("set", "theme", "light").then(() => console.log("Theme set in IndexedDB!"));
         }
 
         function getTheme() {
