@@ -9,20 +9,19 @@
     <button onclick="getTheme()">Get Theme</button>
 
     <script>
-        function checkCookie(name) {
-            return document.cookie.split('; ').some(row => row.startsWith(name + '='));
-        }
-
-        function ensureStorageAccess() {
-            if (checkCookie("storageUnlocked")) {
+        function checkStorageAccess() {
+            // Check if IndexedDB was unlocked in the top-level context
+            if (localStorage.getItem("storageUnlocked") === "true") {
                 console.log("✅ Storage access already granted, no redirect needed.");
                 return;
             }
-            
+
+            // Redirect to grant access
             console.log("🚨 Redirecting to grant storage access...");
             window.location.href = "https://safari-test-one.vercel.app/grant-access.html?returnUrl=" + encodeURIComponent(window.location.href);
         }
 
+        // Load iframe storage
         const iframe = document.createElement("iframe");
         iframe.src = "https://safari-test-one.vercel.app"; 
         iframe.style.display = "none";
@@ -49,7 +48,7 @@
             sendMessage("get", "theme").then((value) => console.log("Current Theme:", value));
         }
 
-        ensureStorageAccess();
+        checkStorageAccess();
     </script>
 </body>
 </html>
