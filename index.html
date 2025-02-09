@@ -10,21 +10,32 @@
 
     <script>
         const iframe = document.createElement("iframe");
-        iframe.src = "https://safari-test-one.vercel.app"; 
+        iframe.src = "https://safari-test-one.vercel.app";
         iframe.style.display = "none";
         document.body.appendChild(iframe);
+
+        function checkCookie(name) {
+            return document.cookie.split('; ').some(row => row.startsWith(name + '='));
+        }
+
+        function ensureStorageAccess() {
+            if (!checkCookie("storageUnlocked")) {
+                console.log("🚨 Redirecting to grant storage access...");
+                window.location.href = "https://safari-test-one.vercel.app/grant-access.html?returnUrl=" + encodeURIComponent(window.location.href);
+            } else {
+                console.log("✅ Storage access already granted!");
+            }
+        }
 
         function sendMessage(action, key, value = null) {
             return new Promise((resolve) => {
                 function listener(event) {
-                    console.log("📩 Message received in client:", event.data);
                     if (event.origin === "https://safari-test-one.vercel.app") {
                         resolve(event.data.value);
                         window.removeEventListener("message", listener);
                     }
                 }
                 window.addEventListener("message", listener);
-                console.log(`📤 Sending message: ${action} ${key} = ${value}`);
                 iframe.contentWindow.postMessage({ action, key, value }, "https://safari-test-one.vercel.app");
             });
         }
@@ -36,6 +47,8 @@
         function getTheme() {
             sendMessage("get", "theme").then((value) => console.log("Current Theme:", value));
         }
+
+        ensureStorageAccess();
     </script>
 </body>
 </html>
