@@ -10,7 +10,7 @@ function checkCookie(name) {
 function ensureStorageAccess() {
   if (!checkCookie("storageUnlocked")) {
     console.log("🚨 Redirecting to grant storage access...");
-    window.location.href = "https://safari-test-local1.vercel.app/grant-access.html";
+    window.location.href = "https://safari-test-one.vercel.app/grant-access.html";
   } else {
     console.log("✅ Storage access already granted!");
   }
@@ -19,13 +19,13 @@ function ensureStorageAccess() {
 function sendMessage(action, key, value = null) {
   return new Promise((resolve) => {
     function listener(event) {
-      if (event.origin === "https://safari-test-local1.vercel.app") {
+      if (event.origin === "https://safari-test-one.vercel.app") {
         resolve(event.data.value);
         window.removeEventListener("message", listener);
       }
     }
     window.addEventListener("message", listener);
-    iframe.contentWindow?.postMessage({ action, key, value }, { targetOrigin: "https://safari-test-local1.vercel.app" });
+    iframe.contentWindow?.postMessage({ action, key, value }, { targetOrigin: "https://safari-test-one.vercel.app" });
   });
 }
 
