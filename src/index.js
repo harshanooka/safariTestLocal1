@@ -17,8 +17,8 @@ function ensureStorageAccess() {
 }
 
 function sendMessage(action, key, value = null) {
-  return new Promise<string>((resolve) => {
-    function listener(event: MessageEvent<{ value: string }>) {
+  return new Promise((resolve) => {
+    function listener(event) {
       if (event.origin === "https://local.cache.com:8081") {
         resolve(event.data.value);
         window.removeEventListener("message", listener);
