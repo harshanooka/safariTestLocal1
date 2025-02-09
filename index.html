@@ -11,20 +11,20 @@
 
     <script>
         const iframe = document.createElement("iframe");
-        iframe.src = "https://local.cache.com:8081";
+        iframe.src = "https://safari-test-one.vercel.app";
         iframe.style.display = "none";
         document.body.appendChild(iframe);
 
         function sendMessage(action, key, value = null) {
             return new Promise((resolve) => {
                 function listener(event) {
-                    if (event.origin === "https://local.cache.com:8081") {
+                    if (event.origin === "https://safari-test-one.vercel.app") {
                         resolve(event.data.value);
                         window.removeEventListener("message", listener);
                     }
                 }
                 window.addEventListener("message", listener);
-                iframe.contentWindow.postMessage({ action, key, value }, "https://local.cache.com:8081");
+                iframe.contentWindow.postMessage({ action, key, value }, "https://safari-test-one.vercel.app");
             });
         }
 
