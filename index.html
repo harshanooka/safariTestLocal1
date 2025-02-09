@@ -10,19 +10,21 @@
 
     <script>
         const iframe = document.createElement("iframe");
-        iframe.src = "https://safari-test-one.vercel.app"; // Storage iframe
+        iframe.src = "https://safari-test-one.vercel.app"; 
         iframe.style.display = "none";
         document.body.appendChild(iframe);
 
         function sendMessage(action, key, value = null) {
             return new Promise((resolve) => {
                 function listener(event) {
+                    console.log("📩 Message received in client:", event.data);
                     if (event.origin === "https://safari-test-one.vercel.app") {
                         resolve(event.data.value);
                         window.removeEventListener("message", listener);
                     }
                 }
                 window.addEventListener("message", listener);
+                console.log(`📤 Sending message: ${action} ${key} = ${value}`);
                 iframe.contentWindow.postMessage({ action, key, value }, "https://safari-test-one.vercel.app");
             });
         }
