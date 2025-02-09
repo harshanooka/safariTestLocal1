@@ -3,7 +3,7 @@ iframe.src = "https://local.cache.com:8081";
 iframe.style.display = "none";
 document.body.appendChild(iframe);
 
-function checkCookie(name: string) {
+function checkCookie(name) {
   return document.cookie.split("; ").some((row) => row.startsWith(name + "="));
 }
 
@@ -16,7 +16,7 @@ function ensureStorageAccess() {
   }
 }
 
-function sendMessage(action, key, value | null = null) {
+function sendMessage(action, key, value = null) {
   return new Promise<string>((resolve) => {
     function listener(event: MessageEvent<{ value: string }>) {
       if (event.origin === "https://local.cache.com:8081") {
