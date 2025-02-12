@@ -1,14 +1,40 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Local 1</title>
+    <title>Web App 1</title>
   </head>
   <body>
-    <h1>Local 1</h1>
-    <button onclick="setDarkTheme()">Set Dark Theme</button>
-    <button onclick="getTheme()">Get Theme</button>
-    <button onclick="triggerRequestStorageAccess()">Enable Storage (Safari)</button>
+    <h1>Web App 1</h1>
+    <button id="setData">Set Data</button>
+    <button id="getData">Get Data</button>
+    <button id="goToAcceptStorage">Go to accept storage</button>
 
-    <script src="./src/index.js"></script>
+    <script>
+      const iframe = document.createElement("iframe");
+      iframe.src = "https://safari-test-one.vercel.app?embedded=1";
+      document.body.appendChild(iframe);
+
+      document.querySelector("#setData").addEventListener("click", () => {
+        iframe.contentWindow?.postMessage(
+          { action: "set", key: "theme", value: "dark" },
+          { targetOrigin: "https://safari-test-one.vercel.app" }
+        );
+      });
+
+      document.querySelector("#getData").addEventListener("click", () => {
+        function listener(event) {
+          if (event.origin === "https://safari-test-one.vercel.app") {
+            console.log(event.data.value);
+            window.removeEventListener("message", listener);
+          }
+        }
+        window.addEventListener("message", listener);
+
+        iframe.contentWindow?.postMessage(
+          { action: "get", key: "theme", value: "dark" },
+          { targetOrigin: "https://safari-test-one.vercel.app" }
+        );
+      });
+    </script>
   </body>
 </html>
